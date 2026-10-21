@@ -2,9 +2,9 @@ name: Public Ubuntu platform smoke (no vendor client)
 on:
   push:
     branches: [main]
-    paths: ['ci/**', 'tools/**', 'tests/**', '.github/workflows/public-platform.yml']
+    paths: ['ci/**', 'tools/**', 'tests/**', 'client/java/port/ExitRecording*.java', '.github/workflows/public-platform.yml']
   pull_request:
-    paths: ['ci/**', 'tools/**', 'tests/**', '.github/workflows/public-platform.yml']
+    paths: ['ci/**', 'tools/**', 'tests/**', 'client/java/port/ExitRecording*.java', '.github/workflows/public-platform.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,13 +19,13 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
-      - name: Check public distribution boundary
-        run: |
-          python3 tools/check_public_tree.py
-          python3 -m unittest discover -s tests -v
       - name: Install only official Ubuntu dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-remove --no-install-recommends openjdk-21-jdk libgtk-3-0t64 libwebkit2gtk-4.1-0 xvfb xauth dbus-x11
+      - name: Check public distribution boundary
+        run: |
+          python3 tools/check_public_tree.py
+          python3 -m unittest discover -s tests -v
       - name: Genuine SWT and WebKit with sandbox left enabled
         run: bash ci/run_public_platform.sh

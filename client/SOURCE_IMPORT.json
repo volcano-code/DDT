@@ -1,0 +1,26 @@
+{
+  "source_archive_sha256": "c37bb741f7af3a4e5396874003427be3935d9cba5dd9e147fd92a24d792fb1b7",
+  "scope": "20 self-written Java sources only; not full application migration",
+  "files": {
+    "java/com/sd/common/util/device/SystemInfoUtil.java": "80a7fab46c59391a2b9f540e25c17d69746028c01e8830071879972b6b61fdbf",
+    "java/com/sd/common/util/device/WebView2Detector.java": "8b8322fe1397fc481391dfbefb1bef01288c936c025d7aa2a6921e84bf9c66db",
+    "java/com/sd/common/util/swt/browser/BrowserSetup.java": "98da4586ead7dcc116c5431faae593aa980b37c053ef445a92b8edbc2603bf81",
+    "java/com/sd/ddt/util/DependencyChecker.java": "701566f17b0dfcff7545c118c6279e48a90f659894c7c0dfefa2301857521672",
+    "java/com/sd/ddt/util/JavaEnvUtil.java": "af1b05b9aa4b9664eaf4870c7160093bca157d5c25190c4e62dd89cbcdb5f909",
+    "java/port/Bootstrap.java": "92085d72b557415b7dfbee61fcdb2c6e8cf3ab7fa2de85cc57af5281793f4eaa",
+    "java/port/BrowserHealth.java": "28d5066aa3d1895b2741afb6f7ec13f6c612827410e05f6dd335b2b57ee6dd7c",
+    "java/port/BrowserPreflight.java": "5f126cd2bd0926a050981e4caa3df17d0526197f074e8a2b4f0ecdef78020049",
+    "java/port/ExitRecording.java": "f1ce1172a08269b496bcec40d9b5a40d3cfb1421e0abba06b11f0a43fee275ed",
+    "java/port/ExitRecordingReader.java": "639d2155d2e47cf64f744c57ed7b90b4686bab03b73235843e286fe4c3ace9fc",
+    "java/port/ExportMatrixProbe.java": "8334fea0acd63711fac6997b27df3b817c925b4d88aa7c0df0edab62639aa476",
+    "java/port/GtkProbe.java": "c6fb3b6ff1535bf732cd98fd7a183c7eeace99306238fbef8fcf325acd3c36eb",
+    "java/port/GuardProbe.java": "188eebab21cfb121c034d35714c5f6204c48a24d6b2f36fe638cb5fe7951487b",
+    "java/port/LinkProbe.java": "8f6e4e403f2f5f62d53487d4159901135453316b3a18daf131fd30fbe1546a03",
+    "java/port/NativeProbe.java": "15c7108e7d1da1b851107a479b330f642b1abde499ab13ceaa572df3de7fb3c7",
+    "java/port/OriginalExportProbe.java": "a294bf913c835a1ef4482aad5109fb0f7d024a959086697b1b2f199ab8ed9aa1",
+    "java/port/ProbeEvidence.java": "adbd5249c844c76510b26ccba290d4fbc46b9dc55771a0d5050b8737ec5db038",
+    "java/port/RuntimeIntegrity.java": "43f551c614541445dc870399c62b18a2636510ea21f2c299b8cb9955d9d496ee",
+    "java/port/SystemInfoProbe.java": "c36d9552ef76bbae53d9adb3958d757097ded3c8582663ecf2f76bda1f5e9234",
+    "java/port/WindowTelemetry.java": "00d27068d6840b09a51b3bb10f4bf2ae281202751b4f9b89b18018bdbc6e48b4"
+  }
+}
