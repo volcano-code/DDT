@@ -1,20 +1,29 @@
-# Linux compatibility source import — partial repository migration
+# Linux client adaptation: public source, not an installable release
 
-`java/` contains the 20 self-written compatibility and diagnostic Java sources
-from client `0.1.0-alpha.5-dev.1`. They are not a copy of the vendor client.
-No vendor JAR, Windows installer, derived proprietary class patch, SWT binary,
-font, session, account or license is distributed here.
+This directory now contains the self-written Python deployment/upgrade/runtime
+modules, command entrypoints, packaging scripts and 20 Java compatibility and
+diagnostic sources from the reviewed `0.1.0-alpha.5-dev.1` baseline.
 
-This directory is a reviewed source import, **not yet a standalone build or an
-installable release**. The Python deployment/upgrade modules and the accounting
-workbench are still pending public-repository migration. Several classes refer
-to vendor API types and can only be compiled/tested with appropriately authorized
-private inputs. They must not be tested by publishing those inputs here.
+No commercial installer, vendor JAR, derived proprietary class patch, SWT binary,
+font, session, license or customer information is distributed. The public tree
+also excludes precompiled JARs; source availability does not mean a fresh clone
+is a prepared commercial-client installation. Private authorized inputs and
+validated self-written build artifacts are required for full original-client
+acceptance. Unsupported or missing inputs must fail rather than bypass checks.
 
-The root public CI compiles only the independent JFR classes and its self-written
-SWT/WebKit platform probe. Its success must not be described as original-client
-login, original-export, upgrade, accounting, or production acceptance.
+For a read-only CLI check from any directory:
 
-Source archive identity: `ddt-integrated-cloud-r2-20261021.zip`, SHA-256
-`c37bb741f7af3a4e5396874003427be3935d9cba5dd9e147fd92a24d792fb1b7`.
-Per-file identities are recorded in `SOURCE_IMPORT.json`.
+```bash
+python3 /absolute/path/to/DDT/client/bin/ddt-linux --version
+python3 /absolute/path/to/DDT/client/bin/ddt-linux --help
+```
+
+`SOURCE_IMPORT.json` identifies the original 20 reviewed Java sources. The public
+CI tests standalone JFR classes, deployment rejection rules and a self-written
+SWT/WebKit page. It does not execute the proprietary client or prove its login,
+report export, upgrade, licensing, devices or production readiness.
+
+No changes to original authentication or license decisions are authorized by
+this repository. Original-client tests must use appropriately licensed private
+inputs and a separately approved environment. Keep an existing working runtime
+unchanged until an independently tested installation candidate is published.
