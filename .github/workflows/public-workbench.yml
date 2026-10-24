@@ -1,0 +1,70 @@
+name: Public workbench regression and browser acceptance
+'on':
+  push:
+    branches: [main, feat/public-source-completion]
+    paths: ['workbench/**', 'tools/**', '.github/workflows/public-workbench.yml']
+  pull_request:
+    paths: ['workbench/**', 'tools/**', '.github/workflows/public-workbench.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: workbench-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  rules-and-http:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Public distribution guard
+        run: python3 tools/check_public_tree.py
+      - name: Prepare explicit dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-remove --no-install-recommends python3-venv nodejs npm
+          python3 -m venv "$RUNNER_TEMP/ddt-venv"
+          "$RUNNER_TEMP/ddt-venv/bin/python" -m pip install -r workbench/requirements-dev.txt
+          npm ci --ignore-scripts --prefix workbench/frontend
+          npm run build --prefix workbench/frontend
+      - name: Generate only synthetic test files
+        run: |
+          "$RUNNER_TEMP/ddt-venv/bin/python" workbench/scripts/generate_public_fixtures.py
+      - name: Rules, parser isolation and review regression
+        working-directory: workbench
+        run: |
+          "$RUNNER_TEMP/ddt-venv/bin/python" -m pytest -q -p no:cacheprovider
+      - name: Real HTTP upload, review, download and restart
+        run: |
+          "$RUNNER_TEMP/ddt-venv/bin/python" workbench/scripts/http_smoke_public.py --report "$RUNNER_TEMP/http-result.json"
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Public distribution guard
+        run: python3 tools/check_public_tree.py
+      - name: Prepare dependencies and bundled Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-remove --no-install-recommends python3-venv nodejs npm
+          python3 -m venv "$RUNNER_TEMP/ddt-browser-venv"
+          "$RUNNER_TEMP/ddt-browser-venv/bin/python" -m pip install -r workbench/requirements-dev.txt
+          npm ci --ignore-scripts --prefix workbench/frontend
+          npm run build --prefix workbench/frontend
+          PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/pw-browsers" "$RUNNER_TEMP/ddt-browser-venv/bin/python" -m playwright install --with-deps chromium
+      - name: Real browser acceptance, sandbox enabled
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/pw-browsers
+        run: |
+          "$RUNNER_TEMP/ddt-browser-venv/bin/python" workbench/scripts/browser_smoke.py --report "$RUNNER_TEMP/browser-result.json"
+      - name: Print only allowlisted browser result
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/browser-result.json" ]; then
+            cat "$RUNNER_TEMP/browser-result.json"
+          fi
