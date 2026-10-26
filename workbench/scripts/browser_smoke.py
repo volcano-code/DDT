@@ -19,6 +19,7 @@ import tempfile
 import time
 import httpx
 from playwright.sync_api import sync_playwright, expect
+from browser_runtime import CHANNELS, failure_details, launch_options, system_observations, verify_sandbox
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -44,17 +45,21 @@ def stop(proc: subprocess.Popen | None) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--report', type=Path, required=True)
-    parser.add_argument('--chromium', type=Path, help='Optional explicit installed browser; default is Playwright bundled Chromium')
+    selection = parser.add_mutually_exclusive_group()
+    selection.add_argument('--chromium', type=Path, help='Optional explicit installed browser; default is Playwright bundled Chromium')
+    selection.add_argument('--browser-channel', choices=CHANNELS, default='bundled', help='Explicit browser selection; never falls back after failure')
     args = parser.parse_args()
     output = args.report.absolute()
     if output.exists() or any(p.is_symlink() for p in (output, *output.parents)):
         parser.error('New, non-symlink report path required')
     output.parent.mkdir(parents=True, exist_ok=True)
     checks = []
-    report = {'schema':1, 'status':'running', 'checks':checks, 'synthetic_only':True,
+    report = {'schema':2, 'status':'running', 'checks':checks, 'synthetic_only':True,
               'real_http':True, 'browser_sandbox_disabled':False,
               'browser_policies_modified':False, 'vendor_client_loaded':False,
               'model_called':False, 'business_verified':False,
+              'browser_channel':'explicit' if args.chromium else args.browser_channel,
+              'observations':system_observations(),
               'started_at_utc':datetime.now(timezone.utc).isoformat()}
     output.write_text(json.dumps(report, indent=2)); os.chmod(output, 0o600)
     proc = None; stage = 'ordinary_user'; errors = []
@@ -97,10 +102,12 @@ def main() -> int:
                 try:
                     with sync_playwright() as pw:
                         stage = 'browser_start'
-                        options = {'headless':True, 'chromium_sandbox':True, 'env':env}
-                        if args.chromium: options['executable_path'] = str(args.chromium)
+                        options = launch_options(args.browser_channel, env, args.chromium)
                         browser = pw.chromium.launch(**options)
                         try:
+                            stage = 'browser_sandbox'
+                            report['sandbox'] = verify_sandbox(browser)
+                            checks.append('browser_sandbox_verified')
                             context = browser.new_context(accept_downloads=True)
                             # Local requests are genuine; never substitute API responses.
                             context.route('**/*', lambda route: route.continue_()
@@ -174,11 +181,7 @@ def main() -> int:
             finally:
                 stop(proc); proc = None; log.close()
     except Exception as exc:
-        report.update(status='blocked_or_failed', failed_stage=stage, error_type=type(exc).__name__)
-        # Never export exception text containing URLs, values or runtime credentials.
-        if 'ERR_BLOCKED_BY_ADMINISTRATOR' in str(exc): report['reason'] = 'browser_navigation_policy'
-        elif stage == 'browser_start': report['reason'] = 'browser_launch_unavailable'
-        else: report['reason'] = 'acceptance_incomplete'
+        report.update(status='blocked_or_failed', failed_stage=stage, **failure_details(stage, exc))
     finally:
         stop(proc)
         report.update(passed_checks=len(checks), page_errors=len(errors),

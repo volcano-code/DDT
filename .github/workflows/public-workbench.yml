@@ -48,7 +48,7 @@ jobs:
           persist-credentials: false
       - name: Public distribution guard
         run: python3 tools/check_public_tree.py
-      - name: Prepare dependencies and bundled Chromium
+      - name: Prepare dependencies and diagnostic Chromium
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-remove --no-install-recommends python3-venv nodejs npm
@@ -57,11 +57,21 @@ jobs:
           npm ci --ignore-scripts --prefix workbench/frontend
           npm run build --prefix workbench/frontend
           PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/pw-browsers" "$RUNNER_TEMP/ddt-browser-venv/bin/python" -m playwright install --with-deps chromium
-      - name: Real browser acceptance, sandbox enabled
+      - name: Diagnose bundled Chromium without changing host policy
         env:
           PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/pw-browsers
         run: |
-          "$RUNNER_TEMP/ddt-browser-venv/bin/python" workbench/scripts/browser_smoke.py --report "$RUNNER_TEMP/browser-result.json"
+          # Observation only, NOT acceptance. The Chrome E2E gate below must pass.
+          if "$RUNNER_TEMP/ddt-browser-venv/bin/python" workbench/scripts/browser_runtime.py --channel bundled; then
+            echo 'Bundled probe verified its sandbox; this is not workbench acceptance.'
+          else
+            echo 'Bundled probe did not verify its sandbox; see allowlisted diagnostic above.'
+          fi
+      - name: Require runner-provided Chrome without replacing it
+        run: test -x /opt/google/chrome/chrome
+      - name: Real browser acceptance, sandbox verified
+        run: |
+          "$RUNNER_TEMP/ddt-browser-venv/bin/python" workbench/scripts/browser_smoke.py --browser-channel chrome --report "$RUNNER_TEMP/browser-result.json"
       - name: Print only allowlisted browser result
         if: always()
         run: |
