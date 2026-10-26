@@ -17,6 +17,13 @@ DISABLED_SANDBOX_FLAGS = frozenset({
     '--single-process',
 })
 
+SANDBOX_ERROR_CODES = frozenset({
+    'browser_arguments_unavailable', 'sandbox_disabling_flag_detected',
+    'malformed_sandbox_status', 'duplicate_sandbox_status',
+    'sandbox_required_status_missing', 'layer1_sandbox_not_enabled',
+    'sandbox_status_not_verified', 'sandbox_evaluation_not_verified',
+})
+
 
 def launch_options(channel: str, env: dict[str, str], executable: Path | None = None) -> dict:
     if channel not in CHANNELS or (executable is not None and channel != 'bundled'):
@@ -45,7 +52,7 @@ def failure_details(stage: str, exc: Exception) -> dict[str, str]:
     elif 'error while loading shared libraries' in text:
         reason = 'browser_shared_library_missing'
     elif stage == 'browser_sandbox':
-        reason = 'sandbox_verification_failed'
+        reason = text if text in SANDBOX_ERROR_CODES else 'sandbox_verification_failed'
     elif stage == 'browser_start':
         reason = 'browser_launch_unavailable'
     else:
@@ -79,20 +86,39 @@ def sandbox_flags_enabled(arguments: list[str]) -> bool:
 
 
 def sandbox_status(rows: list[list[str]]) -> dict[str, bool]:
-    # Require actual status rows, not a substring such as "Yes ... No".
-    statuses = {}
+    # Chromium linuxHandler renders "Layer 1 Sandbox": Namespace/SUID/None.
+    # See chrome/browser/resources/sandbox_internals/sandbox_internals.ts.
+    # Never infer a pass from unrelated text or tolerate duplicate status rows.
+    required = {'layer 1 sandbox', 'pid namespaces', 'network namespaces',
+                'seccomp-bpf sandbox'}
+    statuses: dict[str, str] = {}
+    if not isinstance(rows, list):
+        raise RuntimeError('malformed_sandbox_status')
     for row in rows:
-        if len(row) == 2:
-            key = row[0].strip().lower()
+        if not isinstance(row, list) or not all(isinstance(cell, str) for cell in row):
+            raise RuntimeError('malformed_sandbox_status')
+        if len(row) != 2:
+            if row and row[0].strip().lower() in required:
+                raise RuntimeError('malformed_sandbox_status')
+            continue  # Unrelated headers are not evidence of sandbox status.
+        key = row[0].strip().lower()
+        if key in required:
             if key in statuses:
                 raise RuntimeError('duplicate_sandbox_status')
-            statuses[key] = row[1].strip().lower() == 'yes'
+            statuses[key] = row[1].strip().lower()
+    if not required.issubset(statuses):
+        raise RuntimeError('sandbox_required_status_missing')
+    layer1 = statuses['layer 1 sandbox']
+    if layer1 not in {'namespace', 'suid'}:
+        raise RuntimeError('layer1_sandbox_not_enabled')
     result = {
-        'namespace': statuses.get('namespace sandbox', False),
-        'suid': statuses.get('suid sandbox', False),
-        'seccomp_bpf': statuses.get('seccomp-bpf sandbox', False),
+        'namespace': layer1 == 'namespace',
+        'suid': layer1 == 'suid',
+        'pid_namespaces': statuses['pid namespaces'] == 'yes',
+        'network_namespaces': statuses['network namespaces'] == 'yes',
+        'seccomp_bpf': statuses['seccomp-bpf sandbox'] == 'yes',
     }
-    if not result['seccomp_bpf'] or not (result['namespace'] or result['suid']):
+    if not all(result[key] for key in ('pid_namespaces', 'network_namespaces', 'seccomp_bpf')):
         raise RuntimeError('sandbox_status_not_verified')
     return result
 
@@ -112,9 +138,12 @@ def verify_sandbox(browser) -> dict:
         page = context.new_page()
         page.goto('chrome://sandbox', timeout=10000)
         page.get_by_text('Seccomp-BPF sandbox', exact=True).wait_for(timeout=10000)
-        rows = page.locator('tr').evaluate_all(
+        rows = page.locator('#sandbox-status tr').evaluate_all(
             '(rows) => rows.map(r => Array.from(r.cells, c => c.textContent.trim()))')
         result = sandbox_status(rows)
+        if page.locator('#evaluation').inner_text().strip() != 'You are adequately sandboxed.':
+            raise RuntimeError('sandbox_evaluation_not_verified')
+        result['adequate_reported'] = True
     finally:
         context.close()
     version = browser.version
