@@ -14,7 +14,8 @@ concurrency:
 jobs:
   platform:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    # Ubuntu archive downloads can be slow on hosted runners; leave time for actual GUI checks.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
@@ -23,8 +24,8 @@ jobs:
         run: python3 tools/check_public_tree.py
       - name: Install only official Ubuntu dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-remove --no-install-recommends openjdk-21-jdk libgtk-3-0t64 libwebkit2gtk-4.1-0 xvfb xauth dbus-x11
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=60 -o Acquire::https::Timeout=60 update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=60 -o Acquire::https::Timeout=60 install -y --no-remove --no-install-recommends openjdk-21-jdk libgtk-3-0t64 libwebkit2gtk-4.1-0 xvfb xauth dbus-x11
       - name: Public deployment and JFR source tests
         run: python3 -m unittest discover -s tests -v
       - name: Genuine SWT and WebKit with sandbox left enabled
