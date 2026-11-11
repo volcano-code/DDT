@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=DDT Linux Port Launcher
+Name[zh_CN]=典当通 Linux 移植控制台（实验版）
+Comment=Experimental deployment tool; not a vendor login or production client
+Comment[zh_CN]=部署与诊断工具，不是典当通登录页或生产客户端
+Exec=/usr/bin/ddt-linux-port
+TryExec=/usr/bin/ddt-linux-port
+Icon=utilities-terminal
+Terminal=false
+Categories=Utility;Development;
+StartupNotify=true

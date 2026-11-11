@@ -1,0 +1,66 @@
+{
+  "format": 1,
+  "client_sha256": "e1ddeac78a741946cacc4cf60451691f786ceeebf9b584b3d22818f7284ec2a7",
+  "notes": "Sample-pinned platform constants only; auth bytecode not rewritten. Browser style sites reviewed from exact class hashes. Not a universal patcher.",
+  "classes": [
+    {
+      "class": "com/sd/common/util/SimplePrint.class",
+      "sha256": "ca21269cd0a8d48ebd176666b147e0e551a86882a122df3f9905b4593f4f4314",
+      "integer": {"index": 40, "old": 262144, "new": 65536, "reviewed_browser_constructor_sites": 1}
+    },
+    {
+      "class": "com/sd/common/util/swt/SwtNotification.class",
+      "sha256": "e77e16f5a521d255c7ec6ea64cf706863ebdb14d61aca9e5e6b3dc7decd1bbe1",
+      "integer": {"index": 120, "old": 262144, "new": 65536, "reviewed_browser_constructor_sites": 2}
+    },
+    {
+      "class": "com/sd/common/util/swt/browser/BrowserPool.class",
+      "sha256": "03ef8594c919cc614c2e9d2ecf22c45b679ee28806e610eef51f2166aff74fb7",
+      "integer": {"index": 34, "old": 262144, "new": 65536, "reviewed_browser_constructor_sites": 2}
+    },
+    {
+      "class": "com/sd/common/util/swt/browser/MemberCheckerBrowser$6.class",
+      "sha256": "6f30c3ec07df5cc353c34596136b8dfdb6b626878ac40c9d36d6dcccb541586e",
+      "integer": {"index": 41, "old": 262144, "new": 65536, "reviewed_browser_constructor_sites": 1}
+    },
+    {
+      "class": "com/sd/common/util/swt/browser/MemberCheckerBrowser.class",
+      "sha256": "551edf921165117207fcec68711f981af7fed3716f885378ca1f52e94e2d209a",
+      "integer": {"index": 194, "old": 262144, "new": 65536, "reviewed_browser_constructor_sites": 1}
+    },
+    {
+      "class": "com/sd/common/util/swt/browser/OlPaymentCheckerBrowser$2.class",
+      "sha256": "9ed269fc2def434df5275dbdcfebc5e1960f564437e3f3ff577b906def61905f",
+      "integer": {"index": 45, "old": 262144, "new": 65536, "reviewed_browser_constructor_sites": 1}
+    },
+    {
+      "class": "com/sd/common/util/swt/browser/OlPaymentCheckerBrowser.class",
+      "sha256": "6949855886d8d16c28f5c087b2464b8d75dceac0f235e268120ece61ddde9d58",
+      "integer": {"index": 64, "old": 262144, "new": 65536, "reviewed_browser_constructor_sites": 1}
+    },
+    {
+      "class": "com/sd/ddt/windows/LoginWindow.class",
+      "sha256": "bd75db47c9eeb5d9297345f65ff9e65bcfa7470740ea27ca85807c14afaddd84",
+      "integer": {"index": 1211, "old": 262144, "new": 65536, "reviewed_browser_constructor_sites": 1}
+    },
+    {
+      "class": "com/sd/ddt/windows/MainWindow.class",
+      "sha256": "b2efc5af30b9a06685fe5954fa779c32010b3a45b775c58a1ca193662247244f",
+      "integer": {"index": 545, "old": 262144, "new": 65536, "reviewed_browser_constructor_sites": 1}
+    },
+    {
+      "class": "com/sd/ddt/base/ComParams.class",
+      "sha256": "855d5566f2d2c7672c616390cbb4cbd763d536359bcc5899043a249fc2fb6cbd",
+      "utf8": [
+        {"old": "\u0001\\edge_data", "new": "\u0001/edge_data"},
+        {"old": "\u0001\\ddt.configuration", "new": "\u0001/ddt.configuration"},
+        {"old": "\u0001\\idcard", "new": "\u0001/idcard"}
+      ]
+    },
+    {
+      "class": "com/sd/common/util/swt/browser/BrowserFunctionExportData.class",
+      "sha256": "3fbd4d53f6bd07f6829b3a3996ed5c106be378445d70b53e03862e652b688001",
+      "utf8": [{"old": "\u0001\\\u0001_\u0001.xls", "new": "\u0001/\u0001_\u0001.xls"}]
+    }
+  ]
+}

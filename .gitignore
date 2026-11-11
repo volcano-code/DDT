@@ -8,6 +8,8 @@ session/
 sessions/
 runs/
 logs/
+evidence/
+.pytest_cache/
 *.exe
 *.dll
 *.so
@@ -29,3 +31,6 @@ logs/
 *.jks
 *.key
 access-tokens.txt
+/workbench/samples/
+/workbench/web/assets/workbench.js
+/workbench/web/assets/workbench.js.map

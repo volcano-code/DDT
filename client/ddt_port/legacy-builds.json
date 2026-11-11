@@ -1,0 +1,32 @@
+[
+  {
+    "state": "alpha3",
+    "source_sha256": "033f367c79c5a6df9b450ab02f9128d5514d84d954ee6b018865bc1c67296247",
+    "overlay_sha256": "7cbba62acc92fb2ef989bff6678eff241e24fd68a17e58ccef0d31ff5226fd9f",
+    "compiler_scope": "actual cloud JDK21 release17; other unrecognized bytecode refused"
+  },
+  {
+    "state": "alpha3-systeminfo2",
+    "source_sha256": "cccb6897a0413bbb4f6bd5455ce2a244cc716efa4580f27522ca15dd16fca905",
+    "overlay_sha256": "3db819843ae27d6906bd727c32034f35f57462071bab8e0ab35f21c246c624d9",
+    "compiler_scope": "actual cloud JDK21 release17; other unrecognized bytecode refused"
+  },
+  {
+    "state": "alpha4-dev",
+    "source_sha256": "6fac2da9dc8b3f4937cf01a2fe9b0519aa73e21c4bdac755b92518acde1a03a9",
+    "overlay_sha256": "83c0fa268f1fb7a5b1e33e1ccbd1db00eb6149175ba5f17cecf5d67201e43d1b",
+    "compiler_scope": "prior delivered alpha4-dev artifact, verified archive"
+  },
+  {
+    "state": "alpha4-dev.2",
+    "source_sha256": "4f88239f3c9796eff34fe660c402b9be777a936ce496753433e134cbc36733c1",
+    "overlay_sha256": "8db7153b71fa52782703965dd815441fab8c4823dc011cb45968ae508528e77f",
+    "compiler_scope": "verified prior delivery a2353303...; no unknown bytecode accepted"
+  },
+  {
+    "state": "alpha4-dev.3",
+    "source_sha256": "f4303d5818c7d88bb5818ea8092ebe32913593a0bcb4c460d465ca7ccdc894ca",
+    "overlay_sha256": "2f09901ffb47ae2dd0bf8282c480a6b656bbef99b190f73ef6cffa130c066b69",
+    "compiler_scope": "Verified released dev3 archive ff5093549873; real self-written overlay, not vendor code"
+  }
+]
